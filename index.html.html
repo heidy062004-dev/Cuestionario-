@@ -1,0 +1,475 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Test de Estilos de Aprendizaje (VARK) Universitario</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+    <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;600;700&display=swap" rel="stylesheet">
+    <style>
+        body {
+            font-family: 'Inter', sans-serif;
+            background-color: #f3f4f6; /* bg-gray-100 */
+        }
+        
+        /* Estilo NEUTRAL para las opciones de respuesta */
+        .option-label {
+            background-color: #ffffff; /* Blanco neutral */
+            border-color: #e5e7eb; /* Gray-200 neutral */
+        }
+
+        .question-card:hover {
+            box-shadow: 0 10px 15px -3px rgba(0, 0, 0, 0.1), 0 4px 6px -2px rgba(0, 0, 0, 0.05);
+            transform: translateY(-2px);
+            transition: all 0.2s ease-in-out;
+        }
+        input[type="checkbox"]:checked {
+            border-color: #4f46e5; /* Indigo-600 */
+            background-color: #4f46e5; /* Indigo-600 */
+        }
+    </style>
+</head>
+<body class="p-4 sm:p-8">
+
+    <div id="app" class="max-w-6xl mx-auto bg-white p-6 md:p-10 rounded-xl shadow-2xl">
+        
+        <header class="text-center mb-8 md:mb-12">
+            <h1 class="text-3xl sm:text-4xl font-extrabold text-gray-900 mb-2">
+                Test de Estilos de Aprendizaje
+            </h1>
+            <p class="text-lg text-gray-600">Instrumento de Evaluación para Estudiantes Universitarios</p>
+        </header>
+
+        <section id="instructions" class="mb-10 p-6 bg-blue-50 border-l-4 border-blue-500 rounded-lg">
+            <h2 class="text-xl font-semibold text-blue-700 mb-3">Instrucciones</h2>
+            <p class="text-gray-700 mb-3">Para cada situación, selecciona la opción que mejor describa tu preferencia. Puedes seleccionar **más de una opción** si consideras que varias se aplican a ti.</p>
+            <p class="text-sm font-medium text-blue-600">Responde basándote en cómo realmente aprendes.</p>
+        </section>
+
+        <form id="vark-test-form" class="space-y-8">
+            </form>
+
+        <div class="mt-10 text-center">
+            <button id="evaluate-button" class="px-8 py-3 bg-indigo-600 text-white font-bold rounded-lg shadow-lg hover:bg-indigo-700 transition duration-300 transform hover:scale-105">
+                Evaluar mi Estilo de Aprendizaje
+            </button>
+        </div>
+
+        <section id="results-section" class="mt-16 hidden">
+            <h2 class="text-3xl font-bold text-center text-gray-800 mb-8 border-b-2 border-indigo-300 pb-2">
+                Resultados de tu Test
+            </h2>
+            
+            <div class="grid grid-cols-1 lg:grid-cols-3 gap-8 mb-10">
+                
+                <div class="lg:col-span-1 p-6 bg-gray-50 rounded-xl shadow-inner">
+                    <h3 class="text-xl font-semibold text-gray-700 mb-4">Puntuación por Estilo</h3>
+                    <div id="score-summary" class="space-y-3">
+                        </div>
+                </div>
+
+                <div class="lg:col-span-2 bg-white p-6 rounded-xl shadow-lg border border-gray-200">
+                    <h3 class="text-xl font-semibold text-gray-700 mb-4">Gráfico de Preferencias (Radar)</h3>
+                    <div class="h-64 sm:h-80">
+                        <canvas id="resultsChart"></canvas>
+                    </div>
+                </div>
+            </div>
+
+            <div id="dominant-style-card" class="bg-indigo-50 border-indigo-500 p-6 md:p-8 rounded-xl border-4 mb-10">
+                <h3 class="text-2xl font-extrabold text-gray-900 mb-2">Tu Estilo de Aprendizaje Predominante es:</h3>
+                <p id="dominant-style-text" class="text-4xl font-black text-indigo-700"></p>
+            </div>
+
+            <div id="recommendations-container" class="space-y-6">
+                <h3 class="text-2xl font-bold text-gray-800 border-b-2 border-indigo-200 pb-2 mb-4">Recomendaciones de Estudio Personalizadas</h3>
+                </div>
+
+            <div class="mt-12 p-8 bg-purple-100 border-l-8 border-purple-600 rounded-xl shadow-xl transform hover:scale-[1.01] transition duration-300 ease-in-out">
+                <h3 class="text-3xl font-extrabold text-purple-800 mb-4 flex items-center">
+                    <svg class="w-8 h-8 mr-3 text-purple-600" fill="none" stroke="currentColor" viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 12l2 2 4-4m5.618-4.016A11.955 11.955 0 0112 2.944c-1.397 0-2.735.25-4 .707-1.265.457-2.433 1.144-3.418 2.052L4 7m5.618 4.016A11.955 11.955 0 0112 11.056c1.397 0 2.735.25 4 .707 1.265.457 2.433 1.144 3.418 2.052L20 17m-5.618-4.016A11.955 11.955 0 0112 14.056c-1.397 0-2.735.25-4 .707-1.265.457-2.433 1.144-3.418 2.052L4 20m16-13l-4-3m-8 0L4 7m4 0l-4 3m8 0l4-3m0 0L4 7"></path></svg>
+                    ¡Optimiza tu Aprendizaje! 🚀
+                </h3>
+                <p class="text-xl text-gray-700 mb-5 leading-relaxed">
+                    Ya conoces tu **estilo de aprendizaje**, ahora te invito a **profundizar** al respecto para que conozcas cómo esto puede **optimizar** tu proceso de aprendizaje.
+                </p>
+                <div class="text-center">
+                    <a href="https://outlook.office.com/book/CREAEducacinEspecial@itc.edu.co/" target="_blank" class="inline-flex items-center justify-center px-10 py-4 border border-transparent text-lg font-extrabold rounded-full text-white bg-purple-600 hover:bg-purple-700 shadow-2xl transition duration-300 ease-in-out transform hover:scale-105 hover:ring-4 ring-purple-400">
+                        <svg class="w-6 h-6 mr-3" fill="none" stroke="currentColor" viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M8 7V3m8 4V3m-9 8h10M5 21h14a2 2 0 002-2V7a2 2 0 00-2-2H5a2 2 0 00-2 2v12a2 2 0 002 2z"></path></svg>
+                        Agenda tu Asesoría Personalizada con CREA
+                    </a>
+                    <p class="mt-3 text-sm text-purple-700 font-medium">¡Te esperamos para potenciar tus resultados académicos!</p>
+                </div>
+            </div>
+            <div class="mt-12 text-center">
+                <button id="download-csv-button" class="px-8 py-3 bg-emerald-600 text-white font-bold rounded-lg shadow-lg hover:bg-emerald-700 transition duration-300 transform hover:scale-105 flex items-center justify-center mx-auto">
+                    <svg class="w-5 h-5 mr-2" fill="none" stroke="currentColor" viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M4 16v1a3 3 0 003 3h10a3 3 0 003-3v-1m-4-4l-4 4m0 0l-4-4m4 4V4"></path></svg>
+                    Descargar Resultados (CSV)
+                </button>
+            </div>
+        </section>
+
+        <footer class="mt-16 pt-6 border-t border-gray-300 text-center text-sm text-gray-500">
+            <p>Instrumento VARK Adaptado para Contexto Universitario.</p>
+        </footer>
+
+        <div id="error-modal" class="fixed inset-0 bg-gray-600 bg-opacity-50 overflow-y-auto h-full w-full hidden z-50">
+            <div class="relative top-20 mx-auto p-5 border w-96 shadow-lg rounded-md bg-white">
+                <div class="mt-3 text-center">
+                    <div class="mx-auto flex items-center justify-center h-12 w-12 rounded-full bg-red-100">
+                        <svg class="h-6 w-6 text-red-600" fill="none" stroke="currentColor" viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 9v2m0 4h.01m-6.938 4h13.856c1.54 0 2.502-1.667 1.732-3L13.732 4c-.77-1.333-2.694-1.333-3.464 0L3.398 16c-.77 1.333.192 3 1.732 3z"></path></svg>
+                    </div>
+                    <h3 class="text-lg leading-6 font-medium text-gray-900 mt-2">Error de Evaluación</h3>
+                    <div class="mt-2 px-7 py-3">
+                        <p id="error-message" class="text-sm text-gray-500">Por favor, asegúrate de responder al menos una opción en cada pregunta para obtener resultados precisos.</p>
+                    </div>
+                    <div class="items-center px-4 py-3">
+                        <button id="close-modal-button" class="px-4 py-2 bg-red-500 text-white text-base font-medium rounded-md w-full shadow-sm hover:bg-red-700 focus:outline-none focus:ring-2 focus:ring-red-500 transition duration-150">
+                            Cerrar
+                        </button>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <script>
+        const QUESTIONS_DATA = [
+            { q: "Estás en una clase nueva y el profesor está explicando un concepto complejo. ¿Cómo prefieres que te lo presente para entenderlo mejor?", options: { V: "Usando diagramas, gráficos, mapas conceptuales o videos.", A: "Explicándolo oralmente, con debates o discusiones en clase.", R: "Proporcionando textos, apuntes detallados o artículos para leer.", K: "Con ejemplos prácticos, demostraciones o actividades interactivas." } },
+            { q: "Te preparas para un examen importante. ¿Cuál es tu estrategia principal de estudio?", options: { V: "Creando mapas mentales, resúmenes visuales, o usando flashcards con imágenes.", A: "Grabando tus propias explicaciones, escuchando podcasts o repasando en voz alta.", R: "Leyendo y releyendo tus apuntes, haciendo esquemas escritos o escribiendo ensayos de práctica.", K: "Resolviendo problemas, haciendo ejercicios prácticos, o simulando la situación del examen." } },
+            { q: "Necesitas aprender a usar un nuevo software o herramienta para un proyecto universitario. ¿Cómo prefieres aprender?", options: { V: "Viendo tutoriales en video o capturas de pantalla con instrucciones visuales.", A: "Escuchando explicaciones de un experto o un compañero.", R: "Leyendo el manual de usuario o guías paso a paso.", K: "Experimentando directamente con el software, probando funciones y haciendo clic." } },
+            { q: "Estás trabajando en un proyecto grupal y necesitas presentar tus ideas. ¿Cómo te sientes más cómodo compartiéndolas?", options: { V: "Con presentaciones visuales (diapositivas, infografías) o dibujos en una pizarra.", A: "Exponiendo oralmente mis puntos de vista y participando en la discusión.", R: "Entregando un informe escrito o un documento con mis ideas detalladas.", K: "Dirigiendo una actividad práctica o una demostración para ilustrar mi punto." } },
+            { q: "Cuando tomas apuntes en clase, ¿cómo sueles organizarlos?", options: { V: "Usando colores, símbolos, dibujos o diagramas para conectar ideas.", A: "No tomo muchos apuntes, prefiero escuchar y participar, o grabo la clase.", R: "Escribiendo de forma lineal, con mucho texto y frases completas.", K: "Haciendo anotaciones breves y rápidas, que me permitan mantenerme activo y luego las reestructuro." } },
+            { q: "Si tienes que memorizar una gran cantidad de información (ej. fechas, fórmulas, vocabulario), ¿qué método te resulta más efectivo?", options: { V: "Asociando la información con imágenes, gráficos o códigos de color.", A: "Repitiéndola en voz alta, cantándola o escuchando grabaciones.", R: "Escribiéndola varias veces, haciendo listas o creando acrónimos.", K: "Usando tarjetas de memoria físicas, moviéndote mientras estudias o creando mnemotécnicas con acciones." } },
+            { q: "Cuando te enfrentas a un problema complejo en tu área de estudio, ¿cómo prefieres abordarlo inicialmente?", options: { V: "Dibujando un diagrama de flujo, un esquema o un mapa mental del problema.", A: "Discutiéndolo en voz alta contigo mismo o con otros, explicando el problema paso a paso.", R: "Leyendo toda la información disponible, escribiendo notas y desglosando el problema en partes.", K: "Intentando una solución práctica de inmediato, experimentando con diferentes enfoques." } },
+            { q: "Para recordar una presentación o conferencia, ¿qué te ayuda más?", options: { V: "Las diapositivas, imágenes o videos que se mostraron.", A: "Las explicaciones del orador, las discusiones o preguntas y respuestas.", R: "Las notas que tomaste o los materiales escritos entregados.", K: "Participar activamente, hacer preguntas o moverte durante la presentación." } },
+            { q: "Si tienes que dar una presentación oral, ¿cómo te preparas?", options: { V: "Diseñando diapositivas atractivas y visuales, con gráficos e imágenes.", A: "Ensayando en voz alta, grabándote y escuchándote, o pidiendo a alguien que te escuche.", R: "Escribiendo un guion detallado o resúmenes de los puntos clave.", K: "Practicando tus movimientos, gestos y el uso del espacio durante la presentación." } },
+            { q: "Cuando investigas un tema nuevo, ¿cuál es tu primera opción para buscar información?", options: { V: "Ver documentales, videos educativos o infografías en línea.", A: "Escuchar podcasts, entrevistas o conferencias de expertos.", R: "Buscar artículos académicos, libros o sitios web con información escrita.", K: "Buscar ejemplos prácticos, estudios de caso o simulaciones interactivas." } },
+            { q: "Prefieres que las instrucciones para una tarea se te den:", options: { V: "Mostrándote un ejemplo o un modelo visual de lo que se espera.", A: "Explicándotelas verbalmente, con la posibilidad de hacer preguntas.", R: "Por escrito, en un documento detallado que puedas consultar.", K: "Permitiéndote empezar y aprender sobre la marcha, con ayuda si la necesitas." } },
+            { q: "Para entender un concepto matemático o científico, ¿qué te resulta más útil?", options: { V: "Diagramas, gráficos, modelos 3D o simulaciones visuales.", A: "Explicaciones verbales claras, discusiones o tutoriales de audio.", R: "Fórmulas escritas, textos explicativos o la resolución de problemas paso a paso en papel.", K: "Manipular objetos, realizar experimentos o construir un modelo físico." } },
+            { q: "Cuando estudias para un examen, ¿cómo organizas tu tiempo?", options: { V: "Con un horario codificado por colores o un calendario visual.", A: "Hablando contigo mismo sobre lo que tienes que hacer o usando recordatorios de audio.", R: "Haciendo una lista de tareas detallada o un plan de estudio escrito.", K: "Dividiendo el estudio en bloques de tiempo con actividades variadas, moviéndote entre tareas." } },
+            { q: "Para aprender un nuevo idioma, ¿qué actividad disfrutas más?", options: { V: "Ver películas o series con subtítulos, usar tarjetas con imágenes.", A: "Escuchar música, podcasts o practicar la conversación con hablantes nativos.", R: "Leer libros, escribir frases o hacer ejercicios de gramática.", K: "Participar en juegos de rol, viajar o interactuar físicamente en el idioma." } },
+            { q: "Si tienes que recordar una cita o un evento importante, ¿cómo lo haces?", options: { V: "Anotándolo en un calendario visible, usando un post-it o una alerta visual en tu teléfono.", A: "Repitiéndotelo en voz alta varias veces o pidiendo a alguien que te lo recuerde verbalmente.", R: "Escribiéndolo en tu agenda o en un recordatorio digital.", K: "Asociándolo con una acción o un lugar físico, o configurando una alarma con vibración." } },
+            { q: "Cuando lees un texto académico largo, ¿qué te ayuda a mantener la concentración y comprenderlo?", options: { V: "Subrayar con colores, hacer esquemas o diagramas mientras lees.", A: "Leer en voz alta o susurrar las partes importantes.", R: "Tomar notas detalladas, resumir cada párrafo o escribir preguntas al margen.", K: "Moverte ligeramente, caminar mientras lees o hacer pausas activas." } },
+            { q: "Si estás aprendiendo una nueva habilidad física (ej. un deporte, tocar un instrumento), ¿cómo prefieres que te la enseñen?", options: { V: "Mostrándote cómo se hace, con videos o demostraciones.", A: "Explicándote las instrucciones paso a paso, con consejos verbales.", R: "Dándote un manual con instrucciones escritas o partituras.", K: "Permitiéndote practicar repetidamente, intentándolo tú mismo y corrigiendo sobre la marcha." } },
+            { q: "Para resolver un rompecabezas o un problema lógico, ¿qué enfoque adoptas?", options: { V: "Observando patrones, visualizando las piezas o el problema en tu mente.", A: "Hablando contigo mismo sobre las posibles soluciones, probando ideas verbalmente.", R: "Escribiendo las opciones, haciendo listas o diagramas en papel.", K: "Manipulando las piezas, moviéndolas físicamente o probando diferentes configuraciones." } },
+            { q: "Cuando necesitas recordar los nombres de personas nuevas, ¿qué estrategia usas?", options: { V: "Asociando el nombre con su cara, o con algo visual de su apariencia.", A: "Repitiendo su nombre en voz alta después de que se presentan, o usándolo en una conversación.", R: "Escribiendo su nombre o asociándolo con algo escrito.", K: "Dándoles la mano, o asociando el nombre con una acción o un contexto físico." } },
+            { q: "Para entender un concepto abstracto en filosofía o teoría, ¿qué te ayuda más?", options: { V: "Ver representaciones gráficas, metáforas visuales o analogías.", A: "Escuchar explicaciones detalladas, debates o discusiones filosóficas.", R: "Leer textos complejos, ensayos o análisis escritos.", K: "Relacionarlo con experiencias personales, ejemplos concretos o actividades que lo simulen." } },
+            { q: "Cuando estás en una clase o seminario, ¿qué tipo de actividad te mantiene más comprometido?", options: { V: "Ver presentaciones multimedia, videos o demostraciones visuales.", A: "Participar en debates, hacer preguntas o escuchar a otros estudiantes.", R: "Tomar notas extensas, leer materiales complementarios o participar en foros escritos.", K: "Realizar ejercicios prácticos, trabajos en grupo interactivos o simulaciones." } },
+            { q: "Para planificar un proyecto de investigación, ¿cómo prefieres organizar tus ideas?", options: { V: "Creando un mapa conceptual, un diagrama de Gantt o un tablero visual de ideas.", A: "Hablando sobre el proyecto con un mentor o compañeros, explicando tus ideas en voz alta.", R: "Escribiendo un esquema detallado, una propuesta o un listado de objetivos.", K: "Empezando a trabajar en una pequeña parte del proyecto para ver cómo encaja todo." } },
+            { q: "Si tienes que aprender sobre la historia de un país, ¿qué método prefieres?", options: { V: "Ver documentales históricos, mapas o líneas de tiempo visuales.", A: "Escuchar narraciones, audiolibros o podcasts históricos.", R: "Leer libros de historia, artículos o biografías.", K: "Visitar museos, sitios históricos o participar en recreaciones." } },
+            { q: "Para entender un nuevo procedimiento o protocolo en el laboratorio, ¿cómo lo aprendes mejor?", options: { V: "Observando una demostración, viendo un video del procedimiento.", A: "Escuchando las instrucciones verbales del instructor o un compañero.", R: "Leyendo el manual de laboratorio o las instrucciones escritas.", K: "Realizando el procedimiento tú mismo, paso a paso, con supervisión." } },
+            { q: "Cuando estudias para un examen de opción múltiple, ¿cómo te preparas?", options: { V: "Revisando gráficos, tablas y destacando información clave en tus apuntes.", A: "Haciendo preguntas y respuestas en voz alta, o discutiendo con un grupo de estudio.", R: "Escribiendo posibles preguntas y respuestas, o haciendo resúmenes.", K: "Practicando con exámenes simulados, moviéndote mientras revisas las respuestas." } },
+            { q: "Si tienes que aprender una coreografía o una secuencia de movimientos, ¿cómo lo haces?", options: { V: "Observando al instructor o un video, imitando los movimientos.", A: "Escuchando las instrucciones verbales, contando el ritmo.", R: "Leyendo las descripciones de los movimientos o diagramas de pasos.", K: "Practicando los movimientos una y otra vez, sintiendo el ritmo en tu cuerpo." } },
+            { q: "Para recordar los detalles de un caso de estudio, ¿qué te ayuda más?", options: { V: "Resaltar los puntos clave en el texto, crear un diagrama de los eventos.", A: "Discutir el caso con otros, escuchar diferentes perspectivas.", R: "Tomar notas detalladas del caso, escribir un resumen o un análisis.", K: "Simular una situación similar, actuar los roles o debatir en un juego de rol." } },
+            { q: "Cuando recibes retroalimentación sobre tu trabajo académico, ¿cómo prefieres recibirla?", options: { V: "Con marcas y comentarios escritos en el documento, o un esquema de puntos a mejorar.", A: "En una conversación verbal con el profesor o compañero, con explicaciones claras.", R: "En un informe escrito detallado con sugerencias específicas.", K: "Con ejemplos prácticos de cómo mejorar, o la oportunidad de aplicar los cambios de inmediato." } },
+            { q: "Para entender un nuevo concepto en economía o sociología, ¿qué te resulta más fácil?", options: { V: "Gráficos, estadísticas visuales, diagramas de relaciones.", A: "Debates, conferencias, discusiones en clase.", R: "Artículos, libros, informes de investigación.", K: "Estudios de caso, simulaciones, proyectos que apliquen el concepto." } },
+            { q: "Si tienes que aprender una lista de vocabulario, ¿cómo lo haces?", options: { V: "Usando tarjetas con imágenes y palabras, o viendo videos con el vocabulario.", A: "Escuchando grabaciones de las palabras, repitiéndolas en voz alta.", R: "Escribiendo las palabras y sus definiciones varias veces, haciendo listas.", K: "Usando tarjetas físicas, moviéndote mientras las repasas o asociándolas con gestos." } },
+            { q: "Para comprender un proceso biológico complejo, ¿qué te ayuda más?", options: { V: "Diagramas de flujo, animaciones 3D, imágenes detalladas.", A: "Explicaciones verbales, debates sobre el proceso.", R: "Textos científicos, artículos de revisión, descripciones paso a paso.", K: "Construir un modelo, realizar un experimento o una simulación." } },
+            { q: "Cuando estás en una biblioteca o centro de recursos, ¿qué tipo de material buscas primero?", options: { V: "Libros con muchas ilustraciones, mapas, o videos educativos.", A: "Audiolibros, grabaciones de conferencias.", R: "Libros de texto, revistas académicas, enciclopedias.", K: "Materiales interactivos, kits de experimentación, o espacios para trabajar en proyectos." } },
+            { q: "Si tienes que aprender sobre una nueva cultura, ¿qué harías?", options: { V: "Ver documentales, fotos, películas sobre la cultura.", A: "Escuchar música, aprender el idioma, hablar con personas de esa cultura.", R: "Leer libros, artículos, blogs sobre la cultura.", K: "Cocinar su comida, bailar sus danzas, visitar sus lugares, interactuar con su gente." } },
+            { q: "Para entender un concepto de programación o codificación, ¿qué te resulta más fácil?", options: { V: "Ver ejemplos de código, diagramas de flujo de programas.", A: "Escuchar explicaciones de un programador, tutoriales de audio.", R: "Leer la documentación, libros de programación, escribir código.", K: "Escribir y ejecutar el código tú mismo, depurar errores, construir pequeños proyectos." } },
+            { q: "Cuando necesitas recordar una serie de pasos para una tarea, ¿cómo lo haces?", options: { V: "Creando un diagrama de flujo o una secuencia de imágenes.", A: "Repitiendo los pasos en voz alta o escuchando una grabación.", R: "Escribiendo los pasos en una lista o un manual.", K: "Practicando los pasos físicamente o simulando la acción." } },
+            { q: "Para aprender sobre anatomía, ¿qué te ayuda más?", options: { V: "Atlas de anatomía con imágenes, modelos 3D, videos.", A: "Escuchar explicaciones de un profesor, discusiones sobre las estructuras.", R: "Libros de texto, descripciones detalladas, tomar notas.", K: "Diseccionar, palpar modelos, dibujar las estructuras." } },
+            { q: "Si tienes que aprender un nuevo concepto en estadística, ¿qué te resulta más útil?", options: { V: "Ver gráficos de datos, distribuciones, diagramas estadísticos.", A: "Escuchar explicaciones de un experto, debates sobre la interpretación de datos.", R: "Leer libros de estadística, artículos, fórmulas escritas.", K: "Trabajar con conjuntos de datos, usar software estadístico, realizar cálculos manuales." } },
+            { q: "Cuando te sientes abrumado por la cantidad de información en un curso, ¿qué haces?", options: { V: "Organizo la información en mapas conceptuales o esquemas visuales para ver el panorama general.", A: "Hablo con alguien al respecto, pido una explicación verbal o escucho un resumen.", R: "Hago listas de prioridades, resúmenes escritos o reestructuro mis apuntes.", K: "Me tomo un descanso activo, hago algo físico para despejar mi mente y luego retomo con una actividad práctica." } },
+            { q: "Para entender el funcionamiento de una máquina o un sistema, ¿cómo lo aprendes mejor?", options: { V: "Observando un diagrama de la máquina, viendo un video de su funcionamiento.", A: "Escuchando la explicación de un experto, los sonidos de la máquina en funcionamiento.", R: "Leyendo el manual de instrucciones, descripciones técnicas.", K: "Desmontando y montando la máquina, manipulando sus partes, probando su funcionamiento." } },
+            { q: "Si tienes que enseñar algo a otra persona, ¿cómo lo harías?", options: { V: "Usando ayudas visuales como pizarras, diapositivas o dibujos.", A: "Explicando verbalmente, fomentando la discusión y respondiendo preguntas.", R: "Proporcionando materiales escritos, resúmenes o guías.", K: "Con demostraciones prácticas, dejando que la persona lo intente y guiándola en el proceso." } },
+        ];
+
+        // Definiciones de Recomendaciones y Colores (se mantienen)
+        const RECOMMENDATIONS = {
+            V: {
+                title: "Visual (V)",
+                recs: [
+                    "Uso de diagramas y mapas conceptuales: Convierta sus apuntes en esquemas visuales, diagramas de flujo, mapas mentales o tablas.",
+                    "Colores y resaltadores: Utilice diferentes colores para subrayar, resaltar y codificar la información importante.",
+                    "Símbolos y espacio: Incorpore símbolos y aproveche el espacio en blanco en sus notas para crear una estructura visual clara.",
+                    "Recursos visuales: Busque libros de texto y materiales que incluyan muchos diagramas, gráficos e imágenes.",
+                    "Preparación para exámenes: Dibuje diagramas y utilice representaciones visuales para recordar la información."
+                ]
+            },
+            A: {
+                title: "Auditivo (A)",
+                recs: [
+                    "Participación activa: Asista a clases, debates y tutorías. Discuta los temas con compañeros y profesores.",
+                    "Grabaciones de audio: Utilice una grabadora de audio para registrar clases o sus propias explicaciones.",
+                    "Lectura en voz alta: Lea sus apuntes o resúmenes en voz alta.",
+                    "Mnemotecnias auditivas: Utilice rimas, canciones o acrónimos que involven el sonido.",
+                    "Preparación para exámenes: Diga sus respuestas en voz alta o dentro de su cabeza."
+                ]
+            },
+            R: {
+                title: "Lectura/Escritura (R)",
+                recs: [
+                    "Tomar notas exhaustivas: Escriba apuntes detallados durante las clases y lecturas.",
+                    "Listas, encabezados y glosarios: Organice la información en listas, utilice encabezados claros y cree glosarios.",
+                    "Lectura y relectura: Lea y relea sus apuntes y los materiales de estudio.",
+                    "Transformación de información: Convierta diagramas y gráficos en afirmaciones escritas.",
+                    "Práctica escrita para exámenes: Escriba respuestas de práctica para preguntas de examen."
+                ]
+            },
+            K: {
+                title: "Kinestésico (K)",
+                recs: [
+                    "Experiencia práctica: Participe en laboratorios, viajes de campo y simulaciones.",
+                    "Ejemplos de la vida real: Busque ejemplos concretos y aplicaciones prácticas.",
+                    "Movimiento y manipulación: Incorpore el movimiento en su estudio, como caminar mientras lee.",
+                    "Ensayo y error: No tema experimentar y aprender de sus errores.",
+                    "Preparación para exámenes: Escriba respuestas de práctica y represente la situación del examen."
+                ]
+            },
+            MM: {
+                title: "Multimodal (MM) - Múltiples Preferencias",
+                recs: [
+                    "Flexibilidad estratégica: Adapte sus métodos de estudio a la naturaleza de la información.",
+                    "Combinación de métodos: Combine estrategias de diferentes estilos para una comprensión integral.",
+                    "Identificación de la demanda: Evalúe cómo se presenta la información en cada curso y utilice el estilo que mejor se adapte.",
+                    "Profundización de la comprensión: Utilice múltiples modalidades para asegurar una comprensión más profunda."
+                ]
+            }
+        };
+
+        let resultsChart = null;
+
+        document.addEventListener('DOMContentLoaded', () => {
+            renderTest();
+            document.getElementById('evaluate-button').addEventListener('click', calculateScoreAndDisplayResults);
+            document.getElementById('download-csv-button').addEventListener('click', downloadCSV);
+            document.getElementById('close-modal-button').addEventListener('click', () => {
+                document.getElementById('error-modal').classList.add('hidden');
+            });
+        });
+
+        // FUNCIÓN MODIFICADA: Aplica estilo neutral y remueve las iniciales del estilo de la vista.
+        function renderTest() {
+            const form = document.getElementById('vark-test-form');
+            form.innerHTML = QUESTIONS_DATA.map((qData, index) => {
+                const qNumber = index + 1;
+                return `
+                    <div class="question-card p-6 border border-gray-200 rounded-lg shadow-md bg-white transition duration-200">
+                        <h3 class="text-xl font-semibold mb-4 text-gray-800">${qNumber}. ${qData.q}</h3>
+                        <div class="space-y-3">
+                            ${Object.keys(qData.options).map(key => {
+                                const optionText = qData.options[key];
+                                // Aplicar clase neutral 'option-label' en lugar de las clases de colores style-V, style-A, etc.
+                                const styleClass = `option-label border-2`; 
+                                return `
+                                    <label class="flex items-start cursor-pointer p-3 rounded-lg ${styleClass} hover:shadow-lg transition duration-150">
+                                        <input type="checkbox" name="q${qNumber}" value="${key}" class="mt-1 w-5 h-5 text-indigo-600 rounded focus:ring-indigo-500 border-gray-300">
+                                        <span class="ml-3 text-gray-700">${optionText}</span>
+                                    </label>
+                                `;
+                            }).join('')}
+                        </div>
+                    </div>
+                `;
+            }).join('');
+        }
+        
+        function calculateScoreAndDisplayResults() {
+            const form = document.getElementById('vark-test-form');
+            const formData = new FormData(form);
+            const scores = { V: 0, A: 0, R: 0, K: 0 };
+            const questionKeys = Array.from(new Set(Array.from(formData.keys()).map(k => k.match(/q\d+/)[0])));
+
+            // Check if all questions have at least one answer
+            const answeredQuestions = questionKeys.filter(key => formData.getAll(key).length > 0);
+            if (answeredQuestions.length !== QUESTIONS_DATA.length) {
+                document.getElementById('error-modal').classList.remove('hidden');
+                return;
+            }
+            
+            // Calculate scores
+            questionKeys.forEach(key => {
+                const selectedOptions = formData.getAll(key);
+                selectedOptions.forEach(style => {
+                    if (scores.hasOwnProperty(style)) {
+                        scores[style]++;
+                    }
+                });
+            });
+
+            const styleNames = { V: "Visual", A: "Auditivo", R: "Lectura/Escritura", K: "Kinestésico" };
+            const scoreValues = Object.values(scores);
+            const maxScore = Math.max(...scoreValues);
+            const dominantStyles = Object.keys(scores).filter(style => scores[style] === maxScore);
+
+            let dominantStyleKey = "";
+            let dominantStyleText = "";
+
+            if (dominantStyles.length === 1) {
+                dominantStyleKey = dominantStyles[0];
+                dominantStyleText = `${styleNames[dominantStyleKey]} (${dominantStyleKey}) - Puntuación: ${maxScore}`;
+            } else if (dominantStyles.length > 1) {
+                dominantStyleKey = "MM"; // Multimodal
+                const styles = dominantStyles.map(s => styleNames[s]).join(' y ');
+                dominantStyleText = `Multimodal: ${styles} - Puntuación Máxima: ${maxScore}`;
+            } else {
+                dominantStyleKey = "MM"; // Fallback para un caso multimodal complejo (aunque improbable)
+                dominantStyleText = "Multimodal - Puntuación Máxima: " + maxScore;
+            }
+
+            displayResults(scores, dominantStyleKey, dominantStyleText);
+            document.getElementById('results-section').classList.remove('hidden');
+            document.getElementById('vark-test-form').classList.add('hidden');
+            document.getElementById('evaluate-button').classList.add('hidden');
+
+            // Scroll to results
+            document.getElementById('results-section').scrollIntoView({ behavior: 'smooth' });
+        }
+
+        function displayResults(scores, dominantStyleKey, dominantStyleText) {
+            const scoreSummary = document.getElementById('score-summary');
+            const dominantStyleCard = document.getElementById('dominant-style-text');
+            const recommendationsContainer = document.getElementById('recommendations-container');
+            const styleNames = { V: "Visual", A: "Auditivo", R: "Lectura/Escritura", K: "Kinestésico" };
+            const colors = { V: 'rgb(79, 70, 229)', A: 'rgb(220, 38, 38)', R: 'rgb(6, 182, 212)', K: 'rgb(245, 158, 11)' };
+
+            // 1. Summary Card
+            scoreSummary.innerHTML = Object.keys(scores).map(key => `
+                <div class="flex justify-between items-center text-lg font-medium text-gray-800">
+                    <span class="flex items-center">
+                        <span class="w-3 h-3 rounded-full mr-2" style="background-color: ${colors[key]}"></span>
+                        ${styleNames[key]} (${key})
+                    </span>
+                    <span class="font-bold text-xl text-indigo-600">${scores[key]}</span>
+                </div>
+            `).join('');
+
+            // 2. Dominant Style
+            dominantStyleCard.textContent = dominantStyleText;
+
+            // 3. Recommendations
+            recommendationsContainer.innerHTML = '';
+            
+            // Get recommendations for the dominant style(s)
+            const recStyles = dominantStyleKey === "MM" 
+                ? Object.keys(scores).filter(style => scores[style] === Math.max(...Object.values(scores))) 
+                : [dominantStyleKey];
+
+            recStyles.forEach(key => {
+                const recData = RECOMMENDATIONS[key];
+                const colorClass = key === "MM" ? 'border-purple-500 bg-purple-50' : `border-indigo-500 bg-indigo-50`;
+                const titleColor = key === "MM" ? 'text-purple-700' : 'text-indigo-700';
+
+                recommendationsContainer.innerHTML += `
+                    <div class="p-5 border-l-4 rounded-lg shadow-md ${colorClass}">
+                        <h4 class="text-xl font-bold ${titleColor} mb-3">${recData.title}</h4>
+                        <ul class="list-disc list-inside space-y-2 text-gray-700 ml-4">
+                            ${recData.recs.map(rec => `<li>${rec}</li>`).join('')}
+                        </ul>
+                    </div>
+                `;
+            });
+
+            // 4. Chart
+            if (resultsChart) {
+                resultsChart.destroy();
+            }
+            const ctx = document.getElementById('resultsChart').getContext('2d');
+            resultsChart = new Chart(ctx, {
+                type: 'radar',
+                data: {
+                    labels: Object.values(styleNames),
+                    datasets: [{
+                        label: 'Puntuación de Preferencia',
+                        data: Object.values(scores),
+                        backgroundColor: 'rgba(79, 70, 229, 0.2)', // Indigo-600 semi-transparente
+                        borderColor: 'rgb(79, 70, 229)',
+                        pointBackgroundColor: 'rgb(79, 70, 229)',
+                        pointBorderColor: '#fff',
+                        pointHoverBackgroundColor: '#fff',
+                        pointHoverBorderColor: 'rgb(79, 70, 229)',
+                        borderWidth: 2
+                    }]
+                },
+                options: {
+                    responsive: true,
+                    maintainAspectRatio: false,
+                    scales: {
+                        r: {
+                            angleLines: {
+                                display: true
+                            },
+                            suggestedMin: 0,
+                            suggestedMax: QUESTIONS_DATA.length * 0.5, // Ajusta el maximo dinamicamente (ej. mitad del total de preguntas)
+                            pointLabels: {
+                                font: {
+                                    size: 14,
+                                    weight: 'bold'
+                                }
+                            },
+                            ticks: {
+                                beginAtZero: true,
+                                stepSize: 2,
+                                backdropColor: 'rgba(255, 255, 255, 0.8)'
+                            }
+                        }
+                    },
+                    plugins: {
+                        legend: {
+                            display: false
+                        },
+                        tooltip: {
+                            callbacks: {
+                                label: function(context) {
+                                    return context.dataset.label + ': ' + context.parsed.r;
+                                }
+                            }
+                        }
+                    }
+                }
+            });
+        }
+
+        function downloadCSV() {
+            const form = document.getElementById('vark-test-form');
+            const formData = new FormData(form);
+            const scores = { V: 0, A: 0, R: 0, K: 0 };
+            const questionKeys = Array.from(new Set(Array.from(formData.keys()).map(k => k.match(/q\d+/)[0])));
+
+            // Calculate scores
+            questionKeys.forEach(key => {
+                const selectedOptions = formData.getAll(key);
+                selectedOptions.forEach(style => {
+                    if (scores.hasOwnProperty(style)) {
+                        scores[style]++;
+                    }
+                });
+            });
+
+            const scoreValues = Object.values(scores);
+            const maxScore = Math.max(...scoreValues);
+            const dominantStyles = Object.keys(scores).filter(style => scores[style] === maxScore);
+            
+            let dominantStyleText = "";
+            if (dominantStyles.length === 1) {
+                dominantStyleText = dominantStyles[0];
+            } else if (dominantStyles.length > 1) {
+                dominantStyleText = "Multimodal (" + dominantStyles.join('/') + ")";
+            }
+
+            // CSV Content
+            let csvContent = "Estilo,Puntuacion\n";
+            csvContent += `Visual,${scores.V}\n`;
+            csvContent += `Auditivo,${scores.A}\n`;
+            csvContent += `Lectura/Escritura,${scores.R}\n`;
+            csvContent += `Kinestésico,${scores.K}\n`;
+            csvContent += `Estilo Predominante,${dominantStyleText}\n`;
+
+            // Create a blob and download
+            const blob = new Blob([csvContent], { type: 'text/csv;charset=utf-8;' });
+            const url = URL.createObjectURL(blob);
+            const link = document.createElement("a");
+            link.setAttribute("href", url);
+            link.setAttribute("download", "Resultados_VARK.csv");
+            document.body.appendChild(link);
+            link.click();
+            document.body.removeChild(link);
+        }
+
+    </script>
+</body>
+</html>
